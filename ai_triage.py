@@ -43,7 +43,7 @@ class Config:
     sonar_token: str
     nvidia_api_key: str
     sonar_project: str
-    nvidia_model: str = "meta/llama-3.1-70b-instruct"
+    nvidia_model: str = "nvidia/nemotron-3-super-120b-a12b"
     nvidia_endpoint: str = _DEFAULT_ENDPOINT
 
     @classmethod

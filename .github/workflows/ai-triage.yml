@@ -1,12 +1,14 @@
 name: AI Triage - SQA-Triage Agent
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       model:
         description: 'Modelo NVIDIA NIM'
         type: string
-        default: 'meta/llama-3.1-70b-instruct'
+        default: 'nvidia/nemotron-3-super-120b-a12b'
 
 jobs:
   triage:
@@ -29,7 +31,7 @@ jobs:
           API_SONAR: ${{ secrets.API_SONAR }}
           API_NVIDIA: ${{ secrets.API_NVIDIA }}
           SONAR_PROJECT: 'daniell-estrada_requests'
-          NVIDIA_MODEL: ${{ github.event.inputs.model || 'meta/llama-3.1-70b-instruct' }}
+          NVIDIA_MODEL: ${{ github.event.inputs.model || 'nvidia/nemotron-3-super-120b-a12b' }}
         run: python ai_triage.py
 
       - name: Upload Triage Result
