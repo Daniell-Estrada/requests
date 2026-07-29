@@ -1,0 +1,45 @@
+name: AI Triage - SQA-Triage Agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      use_sonarcloud:
+        description: 'Obtener issues desde SonarCloud API'
+        type: boolean
+        default: true
+      model:
+        description: 'Modelo NVIDIA NIM a utilizar'
+        type: string
+        default: 'meta/llama-3.1-70b-instruct'
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    environment: TOKENS
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Run SQA-Triage Agent
+        id: triage
+        env:
+          API_SONAR: ${{ secrets.API_SONAR }}
+          API_NVIDIA: ${{ secrets.API_NVIDIA }}
+          SONAR_PROJECT: 'daniell-estrada_requests'
+          NVIDIA_MODEL: ${{ github.event.inputs.model || 'meta/llama-3.1-70b-instruct' }}
+        run: python ai_triage.py
+
+      - name: Upload Triage Result
+        uses: actions/upload-artifact@v4
+        with:
+          name: triage-result
+          path: triage_result.md
+          retention-days: 30
