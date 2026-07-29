@@ -140,7 +140,7 @@ class SonarCloudClient:
 
         raw_issues = payload.get("issues", [])
         if not raw_issues:
-            _LOG.warning("No se encontraron issues abiertos en SonarCloud")
+            _LOG.warning("No se encontraron issues abiertos en SonarCloud. Verificar token y project key. Usando fallback local.")
             return []
 
         return [
@@ -214,7 +214,7 @@ class NvidiaNIMClient:
             "max_tokens": 2048,
         }
 
-        _LOG.info("Enviando %d issues a NVIDIA NIM (%s)", len(issues), self._model)
+        _LOG.info("Enviando %d issues a NVIDIA NIM (%s). Esto puede tomar hasta 3 min (cold start)...", len(issues), self._model)
         req = urllib.request.Request(
             self._endpoint,
             data=json.dumps(payload).encode("utf-8"),
@@ -222,7 +222,7 @@ class NvidiaNIMClient:
         )
 
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
+            with urllib.request.urlopen(req, timeout=180) as resp:
                 data: dict[str, Any] = json.loads(resp.read())
         except (urllib.error.URLError, urllib.error.HTTPError) as exc:
             body = ""
